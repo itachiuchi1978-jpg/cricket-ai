@@ -1,4 +1,12 @@
-import streamlit as st
+import requests
+
+API_KEY = "1053464a-7270-42bb-"
+
+def get_live_matches():
+    url = f"https://api.cricapi.com/v1/currentMatches?apikey={API_KEY}&offset=0"
+    response = requests.get(url)
+    data = response.json()
+    return dataimport streamlit as st
 import pandas as pd
 import numpy as np
 
@@ -95,3 +103,18 @@ wickets = st.number_input("Wickets", 0)
 if st.button("Update Live"):
     prob = live_pred(score, overs, target, wickets)
     st.write(f"Win Probability: {prob:.2f}%")
+st.markdown("---")
+st.subheader("📡 Live IPL Matches")
+
+if st.button("Fetch Live Matches"):
+    data = get_live_matches()
+    
+    if "data" in data:
+        for match in data["data"]:
+            st.write("### 🏏", match["name"])
+            st.write("Status:", match["status"])
+            st.write("Teams:", match["teams"])
+            st.write("Score:", match.get("score", "N/A"))
+            st.markdown("---")
+    else:
+        st.write("No live matches available")
